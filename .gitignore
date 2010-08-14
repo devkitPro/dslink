@@ -1,0 +1,12 @@
+arm7/build/
+arm9/build/
+host/build/
+data/
+host/dslink
+host/dslink.exe
+arm7/*.bin
+arm9/*.bin
+*.o
+*.d
+*.elf
+*.nds
