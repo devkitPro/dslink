@@ -84,7 +84,7 @@ int progressRead(int socket, char *buffer, int size) {
 	return sizeleft;
 }
 //---------------------------------------------------------------------------------
-int loadNDS(int socket) {
+int loadNDS(int socket, u32 remote) {
 //---------------------------------------------------------------------------------
 	int len;
 	
@@ -106,8 +106,8 @@ int loadNDS(int socket) {
 	
 	volatile int response = 0;
 	
-	//if (arm9dest + arm9size > (int)_start) response = 1;
-	//if (arm7dest < 0x037f8000 || arm7dest >= 0x3810000 || arm7dest + arm7size > 0x3810000) response = 2;
+	if (arm9dest + arm9size > (int)_start) response = 1;
+	if (arm7dest >= 0x02000000 && arm7dest < 0x03000000 && arm7dest + arm7size > (int)_start) response = 2;
 
 	send(socket,(int *)&response,sizeof(response),0);
 	
@@ -142,7 +142,7 @@ int loadNDS(int socket) {
 		__system_argv->argvMagic = ARGV_MAGIC;
 		__system_argv->commandLine = cmdline;
 		__system_argv->length = cmdlen;
-		__system_argv->host = 0;
+		__system_argv->host = remote;
 	}
 	fifoSendValue32(FIFO_USER_01,2);
 	REG_IPC_SYNC = 0;
@@ -209,7 +209,7 @@ int main(void) {
 
 		sock_tcp_remote = accept(sock_tcp,(struct sockaddr *)&sa_tcp,&dummy);
 		if (sock_tcp_remote != -1) {
-			loadNDS(sock_tcp_remote);
+			loadNDS(sock_tcp_remote,sa_tcp.sin_addr.s_addr);
 			int i;
 			for ( i = 0; i<30; i++) swiWaitForVBlank();
 			closesocket(sock_tcp_remote);
