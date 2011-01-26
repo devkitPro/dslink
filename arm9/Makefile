@@ -35,11 +35,7 @@ CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions
 
 ASFLAGS	:=	-g $(ARCH) -march=armv5te -mtune=arm946e-s
 
-ifneq (,$(findstring arm9i,$(ARM9ELF)))
 BASE	:=	0x02fb0000 
-else
-BASE	:=	0x023b0000 
-endif
 
 LDFLAGS	=	-specs=dsi_arm9.specs -g $(ARCH) -Wl,--section-start,.init=$(BASE) -Wl,-Map,$(notdir $(ARM9ELF).map)
 

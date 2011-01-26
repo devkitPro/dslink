@@ -5,11 +5,7 @@ _start:
 	
 	.word	endarm7, arm7bin
 	.word	endarm9, arm9bin
-#ifdef DSi
 	.word	0x02fb0000 
-#else
-	.word	0x023b0000 
-#endif
 
 setup:
 	mov	r0, #0
@@ -69,9 +65,5 @@ arm7bin:
 endarm7:
 	.align 2
 arm9bin:
-#ifdef DSi
-	.incbin	"data/dslink.arm9i.exo"
-#else
 	.incbin	"data/dslink.arm9.exo"
-#endif
 endarm9:
