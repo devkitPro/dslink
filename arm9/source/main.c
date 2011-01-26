@@ -210,8 +210,6 @@ int main(void) {
 		sock_tcp_remote = accept(sock_tcp,(struct sockaddr *)&sa_tcp,&dummy);
 		if (sock_tcp_remote != -1) {
 			loadNDS(sock_tcp_remote,sa_tcp.sin_addr.s_addr);
-			int i;
-			for ( i = 0; i<30; i++) swiWaitForVBlank();
 			closesocket(sock_tcp_remote);
 		}
 		swiWaitForVBlank();
