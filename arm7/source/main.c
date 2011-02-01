@@ -48,8 +48,8 @@ int main() {
 
 	irqEnable( IRQ_VBLANK | IRQ_VCOUNT | IRQ_NETWORK);   
 
-	irqSetAUX(IRQ_POWER, powerButtonHandler);
-	irqEnableAUX(IRQ_POWER);
+	irqSetAUX(IRQ_I2C, powerButtonHandler);
+	irqEnableAUX(IRQ_I2C);
 
 	// Keep the ARM7 mostly idle
 	while (!exitflag) {
