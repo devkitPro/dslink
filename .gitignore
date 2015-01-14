@@ -10,3 +10,4 @@ arm9/*.bin
 *.d
 *.elf
 *.nds
+*.map
