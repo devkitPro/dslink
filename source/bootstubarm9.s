@@ -2,10 +2,10 @@
 
 _start:
 	b	setup
-	
-	.word	endarm7, arm7bin
-	.word	endarm9, arm9bin
-	.word	0x02fb0000 
+
+	.word	endarm7
+	.word	endarm9
+	.word	0x02fb0000
 
 setup:
 	mov	r0, #0
@@ -27,7 +27,7 @@ setup:
 	mov	r12, #0x04000000
 	str	r0,[r12,#0x240]
 
-	add	r3, r12, #0x180		@ r3 = 4000180
+	add	r3, r12, #0x180			@ r3 = 4000180
 
 	mov	r2, #1
 	bl	waitsync
@@ -47,7 +47,7 @@ setup:
 	str	r1, [r12]
 	str	r12, [r12,#0x20]
 	bx	r12
-	
+
 	.pool
 
 waitsync:

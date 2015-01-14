@@ -3,11 +3,12 @@
 
 _start:
 	mov	r12, #0x04000000
-	str	r12, [r12, #0x208]
+	mov	r0, #0
 
-	add	r3, r12, #0x180		@ r3 = 4000180
+	str	r0, [r12, #0x208]
 
 	mov	r0, #0x100
+	add	r3, r12, #0x180		@ r3 = 4000180
 	strh	r0, [r3]
 
 	mov	r2, #1
@@ -20,19 +21,19 @@ _start:
 
 	mov	r4, #0x02000000
 	ldr	r0, [r4,#4]
-	mov	r1, #0x06000000
-	ldr	r2, [r4,#8]
-	ldr	r2, [r2]
-	add	r1, r1, r2
-	bl	exo_decrunch
+	mov	r1, #0x02f00000
+
+	mov	r2, #0x06000000
+	bl	decrunch
+
+	mov	r11, r11
+
+	ldr	r0, [r4,#8]
+	mov	r1, #0x02f00000
+	ldr	r2, [r4,#12]
+	bl	decrunch
 
 	ldr	r0, [r4,#12]
-	ldr	r1, [r4,#20]
-	ldr	r2, [r4,#16]
-	ldr	r2, [r2]
-	add	r1, r1, r2
-	bl	exo_decrunch
-
 	ldr	r1, =0x02FFFE24
 	str	r0, [r1]
 	mov	r1, #0x06000000
@@ -44,3 +45,44 @@ waitsync:
 	cmp	r0, r2
 	bne	waitsync
 	bx	lr
+
+
+decrunch:
+	push	{r2,lr}
+	bl	exo_decrunch
+
+	mov	r1, r0
+	mov	r2, r0
+	mov	r2, #0x02f00000
+	sub	r2, r2, r0
+	asr	r2, #2
+
+	pop	{r0,lr}
+
+
+@ Reglist:
+@   r0, r1: dst, src
+@   r2: wcount, then wcount>>3
+@   r3-r10: data buffer
+@   r12: wcount&7
+
+memcpy32:
+	and	r12, r2, #7
+	movs	r2, r2, lsr #3
+	beq	.Lres_cpy32
+	stmfd	sp!, {r4-r10}
+	@ copy 32byte chunks with 8fold xxmia
+.Lmain_cpy32:
+	ldmia	r1!, {r3-r10}
+	stmia	r0!, {r3-r10}
+	subs	r2, r2, #1
+	bhi		.Lmain_cpy32
+	ldmfd	sp!, {r4-r10}
+	@ and the residual 0-7 words
+.Lres_cpy32:
+	subs	r12, r12, #1
+	ldmcsia	r1!, {r3}
+	stmcsia	r0!, {r3}
+	bcs	.Lres_cpy32
+	bx	lr
+

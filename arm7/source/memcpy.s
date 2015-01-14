@@ -24,15 +24,15 @@ memcpy32:
 	stmfd	sp!, {r4-r10}
 	@ copy 32byte chunks with 8fold xxmia
 .Lmain_cpy32:
-		ldmia	r1!, {r3-r10}	
-		stmia	r0!, {r3-r10}
-		subs	r2, r2, #1
-		bhi		.Lmain_cpy32
+	ldmia	r1!, {r3-r10}
+	stmia	r0!, {r3-r10}
+	subs	r2, r2, #1
+	bhi		.Lmain_cpy32
 	ldmfd	sp!, {r4-r10}
 	@ and the residual 0-7 words
 .Lres_cpy32:
-		subs	r12, r12, #1
-		ldmcsia	r1!, {r3}
-		stmcsia	r0!, {r3}
-		bcs	.Lres_cpy32
+	subs	r12, r12, #1
+	ldmcsia	r1!, {r3}
+	stmcsia	r0!, {r3}
+	bcs	.Lres_cpy32
 	bx	lr
