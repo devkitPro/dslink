@@ -27,6 +27,10 @@ void powerButtonHandler() {
 //---------------------------------------------------------------------------------
 int main() {
 //---------------------------------------------------------------------------------
+	REG_SOUNDCNT &= ~SOUND_ENABLE;
+	writePowerManagement(PM_CONTROL_REG, ( readPowerManagement(PM_CONTROL_REG) & ~PM_SOUND_AMP ) | PM_SOUND_MUTE );
+	powerOff(POWER_SOUND);
+
 	// read User Settings from firmware
 	readUserSettings();
 
@@ -42,11 +46,11 @@ int main() {
 	installWifiFIFO();
 
 	installSystemFIFO();
-	
+
 	irqSet(IRQ_VCOUNT, VcountHandler);
 	irqSet(IRQ_VBLANK, VblankHandler);
 
-	irqEnable( IRQ_VBLANK | IRQ_VCOUNT | IRQ_NETWORK);   
+	irqEnable( IRQ_VBLANK | IRQ_VCOUNT | IRQ_NETWORK);
 
 	irqSetAUX(IRQ_I2C, powerButtonHandler);
 	irqEnableAUX(IRQ_I2C);
