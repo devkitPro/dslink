@@ -45,10 +45,10 @@ source/bootstubarm9.o: data/dslink.arm9.exo data/dslink.arm7.exo
 CFLAGS	:=	-O2
 
 dslink7.elf:	$(dslink7ofiles)
-	$(CC) -nostartfiles -nostdlib -specs=ds_arm7.specs $^ -o $@
+	$(CC) -nostartfiles -nostdlib -specs=ds_arm7.specs -Wl,--nmagic -Wl,-Map,dslink7.map $^ -o $@
 
 dslink9.elf:	$(dslink9ofiles)
-	$(CC) -nostartfiles -nostdlib -specs=ds_arm9.specs $^ -o $@
+	$(CC) -nostartfiles -nostdlib -specs=ds_arm9.specs -Wl,--nmagic -Wl,-Map,dslink9.map $^ -o $@
 
 deps:
 	mkdir deps
