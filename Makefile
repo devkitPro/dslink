@@ -7,10 +7,10 @@ endif
 
 include $(DEVKITARM)/ds_rules
 
-dslink7sourcefiles :=	$(wildcard arm7/source/*.c) $(wildcard arm7/source/*.s) $(wildcard arm7/source/*.cpp)
+dslink7sourcefiles :=	$(wildcard arm7/source/*.c) $(wildcard arm7/source/*.s)
 
-dslink9sourcefiles :=	$(wildcard arm9/source/*.c) $(wildcard arm9/source/*.s) $(wildcard arm9/source/*.cpp) \
-						$(wildcard arm9/data/*.*)
+dslink9sourcefiles :=	$(wildcard arm9/source/*.c) $(wildcard arm9/source/*.s) \
+			$(wildcard arm9/data/*.*)
 
 dslink7sfiles	:=	source/bootstubarm7.s
 dslink7cfiles	:=	source/exodecr.c
@@ -40,10 +40,10 @@ dslink.nds:	data dslink7.elf dslink9.elf
 host/dslink$(EXEEXT):
 	$(MAKE) -C host
 
-source/bootstubarm9.o: data/dslink.arm9.exo data/dslink.arm7.exo 
+source/bootstubarm9.o: data/dslink.arm9.exo data/dslink.arm7.exo
 
 CFLAGS	:=	-O2
-				
+
 dslink7.elf:	$(dslink7ofiles)
 	$(CC) -nostartfiles -nostdlib -specs=ds_arm7.specs $^ -o $@
 
@@ -67,15 +67,15 @@ arm7/dslink.arm7.bin:	arm7/dslink.arm7.elf
 
 arm9/dslink.arm9.bin:	arm9/dslink.arm9.elf
 	$(OBJCOPY) -O binary $< $@
-	
+
 arm7/dslink.arm7.elf:	$(dslink7sourcefiles)
-	@$(MAKE) ARM7ELF=$(CURDIR)/$@ -C arm7 
+	@$(MAKE) ARM7ELF=$(CURDIR)/$@ -C arm7
 
 arm9/dslink.arm9.elf:	$(dslink9sourcefiles) arm9/Makefile
-	@$(MAKE) ARM9ELF=$(TOPDIR)/$@ -C arm9 
+	@$(MAKE) ARM9ELF=$(TOPDIR)/$@ -C arm9
 
 clean:
-	@rm -fr data deps $(dslink7ofiles) source/bootstubarm9i.o $(dslink9ofiles) dslink7.elf dslink9.elf dslink.nds dslink9i.elf dsilink.nds source/*.d
+	@rm -fr data deps $(dslink7ofiles) source/bootstubarm9i.o $(dslink9ofiles) dslink7.elf dslink9.elf dslink.nds source/*.d
 	@$(MAKE) -C arm7 clean
 	@$(MAKE) -C arm9 clean
 	@$(MAKE) -C host clean
