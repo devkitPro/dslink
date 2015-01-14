@@ -35,7 +35,7 @@ endif
 all:	host/dslink$(EXEEXT) dslink.nds
 
 dslink.nds:	data dslink7.elf dslink9.elf
-	ndstool -c $@ -7 dslink7.elf -9 dslink9.elf
+	ndstool -c $@  -b dslink.bmp "dslink;the wifi code loader;" -7 dslink7.elf -9 dslink9.elf
 
 host/dslink$(EXEEXT):
 	$(MAKE) -C host
