@@ -75,7 +75,8 @@ arm9/dslink.arm9.elf:	$(dslink9sourcefiles) arm9/Makefile
 	@$(MAKE) ARM9ELF=$(TOPDIR)/$@ -C arm9
 
 clean:
-	@rm -fr data deps $(dslink7ofiles) source/bootstubarm9i.o $(dslink9ofiles) dslink7.elf dslink9.elf dslink.nds source/*.d
+	@rm -fr data deps $(dslink7ofiles) source/bootstubarm9i.o $(dslink9ofiles)
+	@rm -fr dslink7.elf dslink9.elf dslink7.map dslink9.map dslink.nds source/*.d
 	@$(MAKE) -C arm7 clean
 	@$(MAKE) -C arm9 clean
 	@$(MAKE) -C host clean
