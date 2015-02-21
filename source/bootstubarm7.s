@@ -26,8 +26,6 @@ _start:
 	mov	r2, #0x06000000
 	bl	decrunch
 
-	mov	r11, r11
-
 	ldr	r0, [r4,#8]
 	mov	r1, #0x02f00000
 	ldr	r2, [r4,#12]
