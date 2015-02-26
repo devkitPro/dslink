@@ -24,7 +24,7 @@ DATA		:=
 #---------------------------------------------------------------------------------
 ARCH	:=	-mthumb-interwork
 
-CFLAGS	:=	-DNDEBUG -Wall -O2\
+CFLAGS	:=	-DNDEBUG -Wall -Os\
 		-mcpu=arm7tdmi -mtune=arm7tdmi -fomit-frame-pointer\
 		-ffast-math \
 		$(ARCH)
