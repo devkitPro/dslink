@@ -206,7 +206,6 @@ int loadNDS(int socket, u32 remote) {
 	REG_IPC_SYNC = 0x500;
 
 	arm9Reset();
-	//swiSoftReset();
 	while(1);
 }
 
