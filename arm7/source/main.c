@@ -76,7 +76,7 @@ int main() {
 
 	// Keep the ARM7 mostly idle
 	while (!exitflag) {
-		swiIntrWait(1,IRQ_FIFO_NOT_EMPTY);
+		swiHalt();
 		if (fifoCheckValue32(FIFO_USER_01)) {
 			int cmd = fifoGetValue32(FIFO_USER_01);
 			switch(cmd) {
