@@ -35,8 +35,7 @@ int recvall(int socket, void *buffer, int size, int flags) {
 		};
 		if (len == -1) {
 			len = 0;
-			setCursor(20,0);
-			kprintf("recv -1, errno %d",errno);
+			kprintf("\nrecv -1, errno %d\n",errno);
 			size = 0;
 			break;
 		}
@@ -83,6 +82,9 @@ int progressRead(int socket, char *buffer, int size) {
 	}
 	return sizeleft;
 }
+
+void arm9Reset();
+
 //---------------------------------------------------------------------------------
 int loadNDS(int socket, u32 remote) {
 //---------------------------------------------------------------------------------
@@ -133,7 +135,12 @@ int loadNDS(int socket, u32 remote) {
 	}
 
 	volatile int cmdlen=0;
-	char *cmdline = (char*)(arm9dest+arm9size);
+	char *cmdline;
+	if (arm9size != 0){
+		cmdline = (char*)(arm9dest+arm9size);
+	} else {
+		cmdline = (char*)(arm7dest+arm7size);
+	}
 	len = recvall(socket,(char*)&cmdlen,4,0);
 
 	if (cmdlen) {
@@ -144,11 +151,65 @@ int loadNDS(int socket, u32 remote) {
 		__system_argv->length = cmdlen;
 		__system_argv->host = remote;
 	}
-	fifoSendValue32(FIFO_USER_01,2);
+
+	Wifi_DisableWifi();
+
+	DC_FlushAll();
 	REG_IPC_SYNC = 0;
-	swiSoftReset();
-	return 0;
+
+	fifoSendValue32(FIFO_USER_01,2);
+	fifoSendValue32(FIFO_USER_01,__NDSHeader->arm9executeAddress);
+
+	irqDisable(IRQ_ALL);
+	REG_IME = 0;
+
+	//clear out ARM9 DMA channels
+	for (i=0; i<4; i++) {
+		DMA_CR(i) = 0;
+		DMA_SRC(i) = 0;
+		DMA_DEST(i) = 0;
+		TIMER_CR(i) = 0;
+		TIMER_DATA(i) = 0;
+	}
+
+	u16 *mainregs = (u16*)0x04000000;
+	u16 *subregs = (u16*)0x04001000;
+
+	for (i=0; i<43; i++) {
+		mainregs[i] = 0;
+		subregs[i] = 0;
+	}
+
+	REG_DISPSTAT = 0;
+
+	dmaFillWords(0, BG_PALETTE, (2*1024));
+	VRAM_A_CR = 0x80;
+	dmaFillWords(0, VRAM, 128*1024);
+	VRAM_A_CR = 0;
+	VRAM_B_CR = 0;
+// Don't mess with the ARM7's VRAM
+//	VRAM_C_CR = 0;
+	VRAM_D_CR = 0;
+	VRAM_E_CR = 0;
+	VRAM_F_CR = 0;
+	VRAM_G_CR = 0;
+	VRAM_H_CR = 0;
+	VRAM_I_CR = 0;
+//	REG_POWERCNT  = 0x820F;
+
+	//set shared ram to ARM7
+	WRAM_CR = 0x03;
+	// Return to passme loop
+	*((vu32*)0x02FFFE04) = (u32)0xE59FF018;		// ldr pc, 0x02FFFE24
+	*((vu32*)0x02FFFE24) = (u32)0x02FFFE04;		// Set ARM9 Loop address
+
+	REG_IPC_SYNC = 0x500;
+
+	arm9Reset();
+	//swiSoftReset();
+	while(1);
 }
+
 //---------------------------------------------------------------------------------
 int main(void) {
 //---------------------------------------------------------------------------------
