@@ -29,6 +29,26 @@ arm7Reset:
 	orr	r0, r0, #0x80			@ (set i flag)
 	msr	cpsr, r0
 
+	ldr	r0, =0x380FFFC         @ irq vector
+	mov	r1, #0
+	str 	r1, [r0]
+	sub	r0, r0, #4             @ IRQ1 Check Bits
+	str 	r1, [r0]
+	sub	r0, r0, #4             @ IRQ2 Check Bits
+	str 	r1, [r0]
+
+	sub	r0, r0, #128
+	bic	r0, r0, #7
+
+	msr	cpsr_c, #0xd3      @ svc mode
+	mov	sp, r0
+	sub	r0, r0, #128
+	msr	cpsr_c, #0xd2      @ irq mode
+	mov	sp, r0
+	sub	r0, r0, #128
+	msr	cpsr_c, #0xd3      @ system mode
+	mov	sp, r0
+
 	ldr	r0,=0x2FFFE34
 
 	ldr	r0,[r0]
