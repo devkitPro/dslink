@@ -63,16 +63,12 @@ void reboot(u32 arm9start) {
 //---------------------------------------------------------------------------------
 int main() {
 //---------------------------------------------------------------------------------
-	REG_SOUNDCNT &= ~SOUND_ENABLE;
-	writePowerManagement(PM_CONTROL_REG, ( readPowerManagement(PM_CONTROL_REG) & ~PM_SOUND_AMP ) | PM_SOUND_MUTE );
-	powerOff(POWER_SOUND);
 
 	// read User Settings from firmware
 	readUserSettings();
 
 	irqInit();
 	fifoInit();
-
 
 	// Start the RTC tracking IRQ
 	initClockIRQ();
