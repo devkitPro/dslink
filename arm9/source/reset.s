@@ -81,7 +81,7 @@ arm9Reset:
 	msr	cpsr_c, #0xd2      @ irq mode
 	mov	sp, r0
 	sub	r0, r0, #128
-	msr	cpsr_c, #0xd3      @ system mode
+	msr	cpsr_c, #0xdf      @ system mode
 	mov	sp, r0
 
 	ldr	r0,=0x2FFFE24
