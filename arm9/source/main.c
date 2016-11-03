@@ -200,10 +200,13 @@ int loadNDS(int socket, u32 remote) {
 	//set shared ram to ARM7
 	WRAM_CR = 0x03;
 	// Return to passme loop
-	*((vu32*)0x02FFFE04) = (u32)0xE59FF018;		// ldr pc, 0x02FFFE24
-	*((vu32*)0x02FFFE24) = (u32)0x02FFFE04;		// Set ARM9 Loop address
+	//*((vu32*)0x02FFFE04) = (u32)0xE59FF018;		// ldr pc, 0x02FFFE24
+	//*((vu32*)0x02FFFE24) = (u32)0x02FFFE04;		// Set ARM9 Loop address
 
+	while((REG_IPC_SYNC &0xf)!=5);
 	REG_IPC_SYNC = 0x500;
+	while((REG_IPC_SYNC &0xf)!=0);
+	REG_IPC_SYNC = 0;
 
 	arm9Reset();
 	while(1);

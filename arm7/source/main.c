@@ -50,11 +50,17 @@ void reboot(u32 arm9start) {
 	irqDisable(IRQ_ALL);
 
 	REG_IME=0;
-	REG_IPC_SYNC = 0;
+
+	REG_IPC_SYNC = 0x500;
 
 	while((REG_IPC_SYNC &0xf)!=5);
+
+	REG_IPC_SYNC = 0;
+	while((REG_IPC_SYNC &0xf)!=0);
+
 	// copy NDS ARM9 start address into the header, starting ARM9
-	*((vu32*)0x02FFFE24) = arm9start;
+	//*((vu32*)0x02FFFE24) = arm9start;
+
 	// Start ARM7
 	arm7Reset();
 
