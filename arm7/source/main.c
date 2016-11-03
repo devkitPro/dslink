@@ -44,24 +44,20 @@ void powerButtonHandler() {
 void arm7Reset();
 
 //---------------------------------------------------------------------------------
-void reboot(u32 arm9start) {
+void reboot() {
 //---------------------------------------------------------------------------------
 
 	irqDisable(IRQ_ALL);
 
 	REG_IME=0;
 
-	REG_IPC_SYNC = 0x500;
+	REG_IPC_SYNC = 0x700;
 
-	while((REG_IPC_SYNC &0xf)!=5);
+	while((REG_IPC_SYNC &0xf)!=7);
 
 	REG_IPC_SYNC = 0;
 	while((REG_IPC_SYNC &0xf)!=0);
 
-	// copy NDS ARM9 start address into the header, starting ARM9
-	//*((vu32*)0x02FFFE24) = arm9start;
-
-	// Start ARM7
 	arm7Reset();
 
 }
@@ -105,8 +101,7 @@ int main() {
 					break;
 				case 2:
 					irqDisable(IRQ_VCOUNT);
-					while(!fifoCheckValue32(FIFO_USER_01));
-					reboot(fifoGetValue32(FIFO_USER_01));
+					reboot();
 					break;
 			}
 		}
