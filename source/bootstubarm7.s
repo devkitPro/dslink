@@ -25,7 +25,7 @@ _start:
 	ldr	r0, [r4,#4]
 	mov	r1, #0x02f00000
 
-	mov	r2, #0x06000000
+	ldr	r2, =0x06020000
 	bl	decrunch
 
 	ldr	r0, [r4,#8]
@@ -36,7 +36,7 @@ _start:
 	ldr	r0, [r4,#12]
 	ldr	r1, =0x02FFFE24
 	str	r0, [r1]
-	mov	r1, #0x06000000
+	ldr	r1, =0x06020000
 	bx	r1
 
 	.pool

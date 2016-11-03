@@ -23,7 +23,7 @@ setup:
 	@ Wait for write buffer to empty
 	mcr	p15, 0, r0, c7, c10, 4
 
-	mov	r0, #0x820000
+	mov	r0, #0x8a000000
 	mov	r12, #0x04000000
 	str	r0,[r12,#0x240]
 
