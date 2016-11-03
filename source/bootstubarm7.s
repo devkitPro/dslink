@@ -2,6 +2,8 @@
 	.arm
 
 _start:
+	ldr	sp, =0x380FE7C
+
 	mov	r12, #0x04000000
 	mov	r0, #0
 
@@ -36,6 +38,8 @@ _start:
 	str	r0, [r1]
 	mov	r1, #0x06000000
 	bx	r1
+
+	.pool
 
 waitsync:
 	ldrh	r0, [r3]
