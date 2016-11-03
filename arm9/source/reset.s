@@ -29,6 +29,9 @@
 @---------------------------------------------------------------------------------
 arm9Reset:
 @---------------------------------------------------------------------------------
+	mrs	r0, cpsr			@ cpu interrupt disable
+	orr	r0, r0, #0x80			@ (set i flag)
+	msr	cpsr, r0
 
 	ldr	r1, =0x00012078			@ disable protection unit
 	mcr	p15, 0, r1, c1, c0
@@ -39,10 +42,6 @@ arm9Reset:
 
 	@ Wait for write buffer to empty 
 	mcr	p15, 0, r0, c7, c10, 4
-
-	mrs	r0, cpsr			@ cpu interrupt disable
-	orr	r0, r0, #0x80			@ (set i flag)
-	msr	cpsr, r0
 
 	adr	r12, mpu_initial_data
 	ldmia	r12, {r0-r11}
