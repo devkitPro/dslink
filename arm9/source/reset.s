@@ -15,6 +15,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
+#include <nds/arm9/cache_asm.h>
+
 	.text
 	.align 4
 
@@ -33,18 +36,30 @@ arm9Reset:
 	orr	r0, r0, #0x80			@ (set i flag)
 	msr	cpsr, r0
 
-	ldr	r1, =0x00012078			@ disable protection unit
-	mcr	p15, 0, r1, c1, c0
-	@ Disable cache
-	mov	r0, #0
-	mcr	p15, 0, r0, c7, c5, 0		@ Instruction cache
-	mcr	p15, 0, r0, c7, c6, 0		@ Data cache
+	adr	r1, itcm_reset_code
+	mov	r2, #0
+	adr	r3, itcm_reset_code_end
 
-	@ Wait for write buffer to empty 
-	mcr	p15, 0, r0, c7, c10, 4
+copy_itcm_reset:
+	ldmia	r1!, {r0}
+	stmia	r2!, {r0}
+	cmp	r1, r3
+	bne	copy_itcm_reset
+
+	mov	r0, #0
+	bx	r0
+
+@---------------------------------------------------------------------------------
+itcm_reset_code:
+@---------------------------------------------------------------------------------
+	@ Switch off MPU
+	mrc	p15, 0, r0, c1, c0, 0
+	bic	r0, r0, #PROTECT_ENABLE
+	mcr	p15, 0, r0, c1, c0, 0
+
 
 	adr	r12, mpu_initial_data
-	ldmia	r12, {r0-r11}
+	ldmia	r12, {r0-r10}
 
 	mcr	p15, 0, r0, c2, c0, 0
 	mcr	p15, 0, r0, c2, c0, 1
@@ -58,17 +73,20 @@ arm9Reset:
 	mcr	p15, 0, r8, c6, c6, 0
 	mcr	p15, 0, r9, c6, c7, 0
 	mcr	p15, 0, r10, c9, c1, 0
-	mcr	p15, 0, r11, c9, c1, 1
 
-	mrc	p15, 0, r0, c9, c1, 0  @ DTCM
-	mov	r0, r0, lsr #12        @ base
-	mov	r0, r0, lsl #12        @ size
-	add	r0, r0, #0x4000        @ dtcm top
+	mov	r0, #0
+	mcr	p15, 0, r0, c6, c2, 0   @ PU Protection Unit Data/Unified Region 2
+	mcr	p15, 0, r0, c6, c5, 0   @ PU Protection Unit Data/Unified Region 5
 
-	sub	r0, r0, #4             @ irq vector
+	mrc	p15, 0, r0, c9, c1, 0   @ DTCM
+	mov	r0, r0, lsr #12         @ base
+	mov	r0, r0, lsl #12         @ size
+	add	r0, r0, #0x4000         @ dtcm top
+
+	sub	r0, r0, #4              @ irq vector
 	mov	r1, #0
 	str 	r1, [r0]
-	sub	r0, r0, #4             @ IRQ1 Check Bits
+	sub	r0, r0, #4              @ IRQ1 Check Bits
 	str 	r1, [r0]
 
 	sub	r0, r0, #128
@@ -83,12 +101,24 @@ arm9Reset:
 	msr	cpsr_c, #0xdf      @ system mode
 	mov	sp, r0
 
+	@ Switch MPU back on
+	mrc	p15, 0, r0, c1, c0, 0
+	orr	r0, r0, #PROTECT_ENABLE
+	mcr	p15, 0, r0, c1, c0, 0
+
 	ldr	r0,=0x2FFFE24
 
 	ldr	r0,[r0]
 	bx	r0
 
-	.pool
+@---------------------------------------------------------------------------------
+waitsync:
+@---------------------------------------------------------------------------------
+	ldrh	r0, [r12]
+	and	r0, r0, #0x000f
+	cmp	r0, r2
+	bne	waitsync
+	bx	lr
 
 mpu_initial_data:
 	.word 0x000000042  @ p15,0,c2,c0,0..1,r0 ;PU Cachability Bits for Data/Unified+Instruction Protection Region
@@ -100,6 +130,9 @@ mpu_initial_data:
 	.word 0x008000035  @ p15,0,c6,c3,0,r6    ;PU Protection Unit Data/Unified Region 3
 	.word 0x00300001b  @ p15,0,c6,c4,0,r7    ;PU Protection Unit Data/Unified Region 4
 	.word 0x0ffff001d  @ p15,0,c6,c6,0,r8    ;PU Protection Unit Data/Unified Region 6
-	.word 0x0027ff017  @ p15,0,c6,c7,0,r9    ;PU Protection Unit Data/Unified Region 7 4KB
+	.word 0x002fff017  @ p15,0,c6,c7,0,r9    ;PU Protection Unit Data/Unified Region 7 4KB
 	.word 0x00300000a  @ p15,0,c9,c1,0,r10   ;TCM Data TCM Base and Virtual Size
-	.word 0x000000020  @ p15,0,c9,c1,1,r11   ;TCM Instruction TCM Base and Virtual Size
+
+	.pool
+
+itcm_reset_code_end:
