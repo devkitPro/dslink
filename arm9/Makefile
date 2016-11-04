@@ -33,7 +33,7 @@ CFLAGS	:=	-g -DNDEBUG -Wall -Os\
 CFLAGS	+=	$(INCLUDE) -DARM9
 CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions
 
-ASFLAGS	:=	-g $(ARCH) -march=armv5te -mtune=arm946e-s
+ASFLAGS	:=	-g $(ARCH) $(INCLUDE)
 
 BASE	:=	0x02fb0000 
 
