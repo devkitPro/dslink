@@ -101,15 +101,55 @@ itcm_reset_code:
 	msr	cpsr_c, #0xdf      @ system mode
 	mov	sp, r0
 
+
+	ldr	r10, =0x2FFFE24
+
+	mov	r0, #0
+	mov	r1, #0
+	mov	r2, #0
+	mov	r3, #0
+	mov	r4, #0
+	mov	r5, #0
+	mov	r6, #0
+	mov	r7, #0
+
+	ldr	r8, [r10, #4]	@ arm9 base address
+	ldr	r9, [r10, #8]	@ arm9 size
+	add	r8, r8, r9
+	add	r9, r8, #31
+	bic	r9, r9, #31
+
+clear1:
+	str	r0, [r8, #4]!
+	cmp	r8, r9
+	blt	clear1
+
+	ldr	r9,=0x4004008
+	ldr	r9,[r9]
+	ands	r9,r9,#0x8000
+	bne	dsi_mode
+
+	mov	r9, #0x02400000
+	b	ds_mode
+dsi_mode:
+	mov	r9, #0x03000000
+ds_mode:
+	sub	r9, #0x0000c000
+clear2:
+	stmia	r8!, {r0, r1, r2, r3, r4, r5, r6, r7}
+	cmp	r8, r9
+	blt	clear2
+
 	@ Switch MPU back on
 	mrc	p15, 0, r0, c1, c0, 0
 	orr	r0, r0, #PROTECT_ENABLE
 	mcr	p15, 0, r0, c1, c0, 0
 
-	ldr	r0,=0x2FFFE24
-
-	ldr	r0,[r0]
+	ldr	r10, =0x2FFFE24
+	ldr	r0, [r10]
 	bx	r0
+
+	.pool
 
 @---------------------------------------------------------------------------------
 waitsync:
