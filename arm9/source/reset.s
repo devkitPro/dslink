@@ -161,18 +161,17 @@ waitsync:
 	bx	lr
 
 mpu_initial_data:
-	.word 0x000000042  @ p15,0,c2,c0,0..1,r0 ;PU Cachability Bits for Data/Unified+Instruction Protection Region
-	.word 0x000000002  @ p15,0,c3,c0,0,r1    ;PU Write-Bufferability Bits for Data Protection Regions
-	.word 0x015111011  @ p15,0,c5,c0,2,r2    ;PU Extended Access Permission Data/Unified Protection Region
-	.word 0x005100011  @ p15,0,c5,c0,3,r3    ;PU Extended Access Permission Instruction Protection Region
-	.word 0x004000033  @ p15,0,c6,c0,0,r4    ;PU Protection Unit Data/Unified Region 0
-	.word 0x00200002b  @ p15,0,c6,c1,0,r5    ;PU Protection Unit Data/Unified Region 1 4MB
-	.word 0x008000035  @ p15,0,c6,c3,0,r6    ;PU Protection Unit Data/Unified Region 3
-	.word 0x00300001b  @ p15,0,c6,c4,0,r7    ;PU Protection Unit Data/Unified Region 4
-	.word 0x0ffff001d  @ p15,0,c6,c6,0,r8    ;PU Protection Unit Data/Unified Region 6
-	.word 0x002fff017  @ p15,0,c6,c7,0,r9    ;PU Protection Unit Data/Unified Region 7 4KB
-	.word 0x00300000a  @ p15,0,c9,c1,0,r10   ;TCM Data TCM Base and Virtual Size
+	.word 0x00000042  @ p15,0,c2,c0,0..1,r0 ;PU Cachability Bits for Data/Unified+Instruction Protection Region
+	.word 0x00000002  @ p15,0,c3,c0,0,r1    ;PU Write-Bufferability Bits for Data Protection Regions
+	.word 0x15111011  @ p15,0,c5,c0,2,r2    ;PU Extended Access Permission Data/Unified Protection Region
+	.word 0x05100011  @ p15,0,c5,c0,3,r3    ;PU Extended Access Permission Instruction Protection Region
+	.word 0x04000033  @ p15,0,c6,c0,0,r4    ;PU Protection Unit Data/Unified Region 0
+	.word 0x0200002b  @ p15,0,c6,c1,0,r5    ;PU Protection Unit Data/Unified Region 1 4MB
+	.word 0x08000035  @ p15,0,c6,c3,0,r6    ;PU Protection Unit Data/Unified Region 3
+	.word 0x0300001b  @ p15,0,c6,c4,0,r7    ;PU Protection Unit Data/Unified Region 4
+	.word 0xffff001d  @ p15,0,c6,c6,0,r8    ;PU Protection Unit Data/Unified Region 6
+	.word 0x02fff017  @ p15,0,c6,c7,0,r9    ;PU Protection Unit Data/Unified Region 7 4KB
+	.word 0x0300000a  @ p15,0,c9,c1,0,r10   ;TCM Data TCM Base and Virtual Size
 
-	.pool
 
 itcm_reset_code_end:
