@@ -114,16 +114,31 @@ itcm_reset_code:
 	mov	r7, #0
 
 	ldr	r8, [r10, #4]	@ arm9 base address
+	cmp	r8, #0
+	bne	doclear
+
+	add	r8, r8, #0x10
+	ldr	r8, [r10, #4]
+	cmp	r8, #0x2000000
+	blt	noclear
+	cmp	r8, #0x3000000
+	bge	noclear
+
+doclear:
 	ldr	r9, [r10, #8]	@ arm9 size
 	add	r8, r8, r9
 	add	r9, r8, #31
 	bic	r9, r9, #31
 
 clear1:
-	str	r0, [r8, #4]!
 	cmp	r8, r9
-	blt	clear1
+	beq	endclear1
 
+	str	r0, [r8, #4]!
+	b	clear1
+
+endclear1:
+	
 	ldr	r9,=0x4004008
 	ldr	r9,[r9]
 	ands	r9,r9,#0x8000
@@ -140,14 +155,29 @@ clear2:
 	cmp	r8, r9
 	blt	clear2
 
-	@ Switch MPU back on
-	mrc	p15, 0, r0, c1, c0, 0
-	orr	r0, r0, #PROTECT_ENABLE
-	mcr	p15, 0, r0, c1, c0, 0
+noclear:
+	mov	r12, #0x04000000
+	add	r12, r12, #0x180
+
+	mov	r0, #0x600
+	strh	r0, [r12]
+	mov	r0, #6
+	bl	waitsync
+
+	mov	r0, #0
+	strh	r0, [r12]
+	bl	waitsync
 
 	ldr	r10, =0x2FFFE24
-	ldr	r0, [r10]
-	bx	r0
+	ldr	r2, [r10]
+
+	@ Switch MPU back on
+	mrc	p15, 0, r0, c1, c0, 0
+	ldr	r1,= ITCM_ENABLE | DTCM_ENABLE | ICACHE_ENABLE | DCACHE_ENABLE
+	orr	r0,r0,r1
+	mcr	p15, 0, r0, c1, c0, 0
+
+	bx	r2
 
 	.pool
 
@@ -172,6 +202,4 @@ mpu_initial_data:
 	.word 0xffff001d  @ p15,0,c6,c6,0,r8    ;PU Protection Unit Data/Unified Region 6
 	.word 0x02fff017  @ p15,0,c6,c7,0,r9    ;PU Protection Unit Data/Unified Region 7 4KB
 	.word 0x0300000a  @ p15,0,c9,c1,0,r10   ;TCM Data TCM Base and Virtual Size
-
-
 itcm_reset_code_end:

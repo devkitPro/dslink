@@ -49,9 +49,30 @@ arm7Reset:
 	msr	cpsr_c, #0xdf      @ system mode
 	mov	sp, r0
 
+	mov	r12, #0x04000000
+	add	r12, r12, #0x180
+
+	mov	r0, #6
+	bl	waitsync
+	mov	r0, #0x600
+	strh	r0, [r12]
+
+	mov	r0, #0
+	bl	waitsync
+	strh	r0, [r12]
+
 	ldr	r0,=0x2FFFE34
 
 	ldr	r0,[r0]
 	bx	r0
 
 	.pool
+
+@---------------------------------------------------------------------------------
+waitsync:
+@---------------------------------------------------------------------------------
+	ldrh	r1, [r12]
+	and	r1, r1, #0x000f
+	cmp	r0, r1
+	bne	waitsync
+	bx	lr
