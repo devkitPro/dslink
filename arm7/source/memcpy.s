@@ -34,6 +34,14 @@
 	.code	32
 	.global	memcpy32
 memcpy32:
+	cmp	r1, r0
+	bge	copy_forward
+
+	add	r3, r1, r2, lsl #2
+	cmp	r0, r3
+	blt	copy_backward
+
+copy_forward:
 	and	r12, r2, #7
 	movs	r2, r2, lsr #3
 	beq	.Lres_cpy32
@@ -51,4 +59,27 @@ memcpy32:
 	ldmcsia	r1!, {r3}
 	stmcsia	r0!, {r3}
 	bcs	.Lres_cpy32
+	bx	lr
+
+copy_backward:
+	add	r0, r0, r2, lsl #2
+	add	r1, r1, r2, lsl #2
+
+	and	r12, r2, #7
+	movs	r2, r2, lsr #3
+	beq	.Lres_bcpy32
+	stmfd	sp!, {r4-r10}
+	@ copy 32byte chunks with 8fold xxmia
+.Lmain_bcpy32:
+	ldmdb	r1!, {r3-r10}
+	stmdb	r0!, {r3-r10}
+	subs	r2, r2, #1
+	bhi	.Lmain_bcpy32
+	ldmfd	sp!, {r4-r10}
+	@ and the residual 0-7 words
+.Lres_bcpy32:
+	subs	r12, r12, #1
+	ldmcsdb	r1!, {r3}
+	stmcsdb	r0!, {r3}
+	bcs	.Lres_bcpy32
 	bx	lr
