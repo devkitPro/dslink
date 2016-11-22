@@ -89,15 +89,14 @@ itcm_reset_code:
 	sub	r0, r0, #4              @ IRQ1 Check Bits
 	str 	r1, [r0]
 
-	sub	r0, r0, #128
-	bic	r0, r0, #7
+	bic	r0, r0, #0x7f
 
 	msr	cpsr_c, #0xd3      @ svc mode
 	mov	sp, r0
-	sub	r0, r0, #128
+	sub	r0, r0, #64
 	msr	cpsr_c, #0xd2      @ irq mode
 	mov	sp, r0
-	sub	r0, r0, #128
+	sub	r0, r0, #4096
 	msr	cpsr_c, #0xdf      @ system mode
 	mov	sp, r0
 
