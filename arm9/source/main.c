@@ -57,6 +57,9 @@ int progressRead(int socket, char *buffer, int size) {
 	int chunksize = size/100;
 	int target = size - chunksize;
 
+	if (chunksize < 1024) chunksize = 1024;
+	if (chunksize > size) chunksize = size;
+
 	int percent = 0;
 
 	while(sizeleft) {
@@ -65,7 +68,7 @@ int progressRead(int socket, char *buffer, int size) {
 		sizeleft -= len;
 		buffer += len;
 		if (sizeleft <= target) {
-			percent++;
+			percent = (100 * (size - sizeleft))/size;
 			target -= chunksize;
 			if (target<0) target = 0;
 		}
