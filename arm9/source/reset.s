@@ -32,6 +32,9 @@
 @---------------------------------------------------------------------------------
 arm9Reset:
 @---------------------------------------------------------------------------------
+	@ address to start clearing from
+	mov	r8, r0
+
 	mrs	r0, cpsr			@ cpu interrupt disable
 	orr	r0, r0, #0x80			@ (set i flag)
 	msr	cpsr, r0
@@ -112,12 +115,6 @@ itcm_reset_code:
 	mov	r6, #0
 	mov	r7, #0
 
-	ldr	r8, [r10, #4]	@ arm9 base address
-	cmp	r8, #0
-	bne	doclear
-
-	add	r8, r8, #0x10
-	ldr	r8, [r10, #4]
 	cmp	r8, #0x2000000
 	blt	noclear
 	cmp	r8, #0x3000000

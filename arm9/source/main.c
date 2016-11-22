@@ -86,7 +86,7 @@ int progressRead(int socket, char *buffer, int size) {
 	return sizeleft;
 }
 
-void arm9Reset();
+void arm9Reset(void *clearfrom);
 
 //---------------------------------------------------------------------------------
 int loadNDS(int socket, u32 remote) {
@@ -207,7 +207,7 @@ int loadNDS(int socket, u32 remote) {
 	while((REG_IPC_SYNC &0xf)!=0);
 	REG_IPC_SYNC = 0;
 
-	arm9Reset();
+	arm9Reset(cmdline+cmdlen);
 	while(1);
 }
 
