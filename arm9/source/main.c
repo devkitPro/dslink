@@ -198,6 +198,7 @@ int loadNDS(int socket, u32 remote) {
 	VRAM_H_CR = 0;
 	VRAM_I_CR = 0;
 	REG_POWERCNT  = 0x820F;
+	REG_EXMEMCNT = 0xE880;
 
 	//set shared ram to ARM7
 	WRAM_CR = 0x03;
