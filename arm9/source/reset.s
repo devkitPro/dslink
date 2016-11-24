@@ -167,10 +167,8 @@ noclear:
 	ldr	r10, =0x2FFFE24
 	ldr	r2, [r10]
 
-	@ Switch MPU back on
+	@ Switch MPU to startup default
 	mrc	p15, 0, r0, c1, c0, 0
-//	ldr	r1,= ITCM_ENABLE | DTCM_ENABLE | ICACHE_ENABLE | DCACHE_ENABLE
-//	orr	r0,r0,r1
 	ldr	r0, =0x00012078
 	mcr	p15, 0, r0, c1, c0, 0
 
