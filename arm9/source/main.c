@@ -262,10 +262,9 @@ int main(void) {
 
 		if (len!=-1) {
 			if (strncmp(recvbuf,"dsboot",strlen("dsboot")) == 0) {
-				int respSock = socket(PF_INET, SOCK_DGRAM, 0);
 				sa_udp_remote.sin_family=AF_INET;
 				sa_udp_remote.sin_port=htons(17491);
-				sendto(respSock, "bootds", strlen("bootds"), 0, (struct sockaddr*) &sa_udp_remote,sizeof(sa_udp_remote));
+				sendto(sock_udp, "bootds", strlen("bootds"), 0, (struct sockaddr*) &sa_udp_remote,sizeof(sa_udp_remote));
 			}
 		}
 
