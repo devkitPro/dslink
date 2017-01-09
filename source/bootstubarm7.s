@@ -1,7 +1,25 @@
 	.global	_start
 	.arm
+	.section ".crt0","ax"
 
 _start:
+	ldr	r1, =__arm7_lma__
+	ldr	r2, =__arm7_start__
+	ldr	r4, =__arm7_end__
+	sub	r3, r4, r2
+
+	mov	r0, #3
+	add	r3, r3, r0
+	bics	r3, r3, r0
+CIDLoop:
+	ldmia	r1!, {r0}
+	stmia	r2!, {r0}
+	subs	r3, r3, #4
+	bne	CIDLoop
+	b	decrunch_bins
+
+	.text
+decrunch_bins:
 	ldr	sp, =0x380FE7C
 
 	mov	r12, #0x04000000
@@ -10,7 +28,7 @@ _start:
 	str	r0, [r12, #0x208]
 
 	mov	r0, #0x100
-	add	r3, r12, #0x180		@ r3 = 4000180
+	add	r3, r12, #0x180
 	strh	r0, [r3]
 
 	mov	r2, #1

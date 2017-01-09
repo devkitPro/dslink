@@ -34,7 +34,7 @@ CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions -fno-rtti
 
 
 ASFLAGS	:=	-g $(ARCH)
-LDFLAGS	=	-specs=ds_arm7_vram.specs -g $(ARCH) -Wl,-Map,$(notdir $(ARM7ELF)).map -Wl,--section-start,.init=0x06020000,--nmagic
+LDFLAGS	=	-specs=ds_arm7_vram.specs -g $(ARCH) -Wl,-Map,$(notdir $(ARM7ELF)).map -Wl,--section-start,.crt0=0x06020000,--nmagic
 
 
 LIBS	:=	-ldswifi7 -lnds7

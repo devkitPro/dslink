@@ -37,7 +37,7 @@ ASFLAGS	:=	-g $(ARCH) $(INCLUDE)
 
 BASE	:=	0x02fb0000 
 
-LDFLAGS	=	-specs=dsi_arm9.specs -g $(ARCH) -Wl,--section-start,.init=$(BASE) -Wl,-Map,$(notdir $(ARM9ELF)).map
+LDFLAGS	=	-specs=dsi_arm9.specs -g $(ARCH) -Wl,--section-start,.crt0=$(BASE) -Wl,-Map,$(notdir $(ARM9ELF)).map
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
