@@ -67,7 +67,7 @@ static void writeChar(char c) {
 		conx = 0;
 		break;
 	default:
-		*mapcell = c;
+		*mapcell = c - 32;
 		conx++;
 		break;
 	}
@@ -109,8 +109,8 @@ void initDisplay() {
 	u16 *btm = BG_MAP_RAM_SUB(4);
 	int i;
 	for ( i = 0; i < 32*32; i++ ) {
-		*top++ = 0x20;
-		*btm++ = 0x20;
+		*top++ = 0;
+		*btm++ = 0;
 	}
 	BG_PALETTE[0]=RGB8(58,110,165);
 	BG_PALETTE[1]=RGB5(31,31,31);
