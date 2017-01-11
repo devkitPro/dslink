@@ -5,7 +5,7 @@ _start:
 
 	.word	endarm7
 	.word	endarm9
-	.word	0x02fb0000
+	.word	0x02e40000
 
 setup:
 	mov	r0, #0

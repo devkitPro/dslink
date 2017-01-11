@@ -36,7 +36,7 @@ CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions
 
 ASFLAGS	:=	-g $(ARCH) $(INCLUDE)
 
-BASE	:=	0x02fb0000 
+BASE	:=	0x02e40000
 
 LDFLAGS	=	-specs=dsi_arm9.specs -g $(ARCH) -Wl,--gc-sections -Wl,--section-start,.crt0=$(BASE) -Wl,-Map,$(notdir $(ARM9ELF)).map
 
