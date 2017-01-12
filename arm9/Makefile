@@ -25,7 +25,7 @@ DATA		:=	data
 #---------------------------------------------------------------------------------
 ARCH	:=	-march=armv5te -mtune=arm946e-s -mthumb -mthumb-interwork
 
-CFLAGS	:=	-g -DNDEBUG -Wall -Os\
+CFLAGS	:=	-g -flto -DNDEBUG -Wall -Os\
 			-ffunction-sections -fdata-sections \
  			-fomit-frame-pointer\
 			-ffast-math \
@@ -38,7 +38,7 @@ ASFLAGS	:=	-g $(ARCH) $(INCLUDE)
 
 BASE	:=	0x02e40000
 
-LDFLAGS	=	-specs=dsi_arm9.specs -g $(ARCH) -Wl,--gc-sections -Wl,--section-start,.crt0=$(BASE) -Wl,-Map,$(notdir $(ARM9ELF)).map
+LDFLAGS	=	-specs=dsi_arm9.specs -g -flto $(ARCH) -Wl,--gc-sections -Wl,--section-start,.crt0=$(BASE) -Wl,-Map,$(notdir $(ARM9ELF)).map
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
