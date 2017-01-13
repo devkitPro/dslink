@@ -204,13 +204,14 @@ int sendNDSFile(in_addr_t dsaddr, char *ndsfile) {
 		return 1;
 	}
 	
-	if (sendData(sock,sizeof(ndsHeader),buffer)) {
+	printf("Sending NDS header ...\n");
+	if (sendData(sock,512,buffer)) {
 		fprintf(stderr,"Failed sending header\n");
 		retval = 1;
 		goto error;
 	}
 	
-	int response;
+	int response, errorcode;
 
 	if(recv(sock,(char*)&response,sizeof(response),0)!=sizeof(response)) {
 		fprintf(stderr,"Invalid response\n");
@@ -218,8 +219,10 @@ int sendNDSFile(in_addr_t dsaddr, char *ndsfile) {
 		goto error;
 	}
 
-	if(response!=0) {
-		switch(response) {
+	errorcode = response & 0x0f;
+
+	if(errorcode!=0) {
+		switch(errorcode) {
 			case 1:
 				fprintf(stderr,"Invalid ARM9 address/length\n");
 				break;
@@ -229,6 +232,15 @@ int sendNDSFile(in_addr_t dsaddr, char *ndsfile) {
 		}
 		retval = 1;
 		goto error;
+	}
+
+	if (response & (1<<16)) {
+		printf("Sending DSi header ...\n");
+		if (sendData(sock,0x1000,buffer)) {
+			fprintf(stderr,"Failed sending header\n");
+			retval = 1;
+			goto error;
+		}
 	}
 
 	header = (struct ndsHeader *)buffer;
@@ -257,12 +269,40 @@ int sendNDSFile(in_addr_t dsaddr, char *ndsfile) {
 		goto error;
 	}
 
+	if (response & (1<<16)) {
+
+		char *arm7i = buffer + header->dsi7_rom_offset;
+		char *arm9i = buffer + header->dsi9_rom_offset;
+
+		int arm7isize = header->dsi7_size;
+		int arm9isize = header->dsi9_size;
+
+		printf("Sending arm7i, %d bytes\n",arm7isize);
+
+		if(sendData(sock,arm7isize,arm7i)) {
+
+			fprintf(stderr,"Failed sending arm7 binary\n");
+			retval = 1;
+			goto error;
+
+		}
+
+		printf("Sending arm9, %d bytes\n",arm9isize);
+
+		if(sendData(sock,arm9isize,arm9i)) {
+
+			fprintf(stderr,"Failed sending arm9 binary\n");
+			retval = 1;
+			goto error;
+		}
+
+	}
+
+
 	if(sendData(sock,cmdlen+4,cmdbuf)) {
 
 		fprintf(stderr,"Failed sending command line\n");
 		retval = 1;
-		goto error;
-
 	}
 			
 

@@ -90,6 +90,8 @@ int progressRead(int socket, char *buffer, int size) {
 
 void arm9Reset(void *clearfrom);
 
+char *DSiBuffer[0x1000];
+
 //---------------------------------------------------------------------------------
 int loadNDS(int socket, u32 remote) {
 //---------------------------------------------------------------------------------
@@ -98,12 +100,15 @@ int loadNDS(int socket, u32 remote) {
 	int i=0;
 	ioctl(socket,FIONBIO,&i);
 
+	kprintf("Reading NDS header: ");
 	len = recvall(socket,__NDSHeader,512,0);
 	
 	if (len != 512) {
-		kprintf("Error reading header.\n");
+		kprintf("Error.\n");
 		return 1;
 	}
+
+	kprintf("OK.\n");
 
 	int arm7dest = __NDSHeader->arm7destination;
 	int arm7size = __NDSHeader->arm7binarySize;
@@ -116,9 +121,21 @@ int loadNDS(int socket, u32 remote) {
 	if (arm9dest + arm9size > (int)_start) response = 1;
 	if (arm7dest >= 0x02000000 && arm7dest < 0x03000000 && arm7dest + arm7size > (int)_start) response = 2;
 
+	if (isDSiMode() && (__NDSHeader->unitCode & 0x02)) response |= (1<<16);
+
 	send(socket,(int *)&response,sizeof(response),0);
 	
-	if(response) return 1;
+	if(response & 0x0f) return 1;
+
+	if(response & (1<<16)) {
+		kprintf("Reading DSi header: ");
+		len = recvall(socket,(void*)0x2FFE000,0x1000,0);
+		if (len != 0x1000) {
+			kprintf("Error.\n");
+			return 1;
+		}
+		kprintf("OK.\n");
+	}
 
 	kprintf("Reading arm7 binary: ");
 	if (progressRead(socket,(char *)memUncached((void*)0x02000000),arm7size)) {
@@ -137,6 +154,26 @@ int loadNDS(int socket, u32 remote) {
 	if(progressRead(socket,(char *)arm9dest,arm9size)) {
 		kprintf("\nReceive error.\n");
 		return 1;
+	}
+
+	if(response & (1<<16)) {
+		int arm7idest = __NDSHeader->arm7idestination;
+		int arm7isize = __NDSHeader->arm7ibinarySize;
+
+		int arm9idest = __NDSHeader->arm9idestination;
+		int arm9isize = __NDSHeader->arm9ibinarySize;
+
+		kprintf("Reading arm7i binary: ");
+		if (progressRead(socket,(char *)memUncached((void*)arm7idest),arm7isize)) {
+			kprintf("\nReceive error.\n");
+			return 1;
+		}
+
+		kprintf("Reading arm9i binary: ");
+		if (progressRead(socket,(char *)arm9idest,arm9isize)) {
+			kprintf("\nReceive error.\n");
+			return 1;
+		}
 	}
 
 	volatile int cmdlen=0;
