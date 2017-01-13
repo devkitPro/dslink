@@ -110,16 +110,16 @@ int loadNDS(int socket, u32 remote) {
 
 	kprintf("OK.\n");
 
-	int arm7dest = __NDSHeader->arm7destination;
+	char *arm7dest = __NDSHeader->arm7destination;
 	int arm7size = __NDSHeader->arm7binarySize;
 
-	int arm9dest = __NDSHeader->arm9destination;
+	char *arm9dest = __NDSHeader->arm9destination;
 	int arm9size = __NDSHeader->arm9binarySize;
 	
 	volatile int response = 0;
 	
-	if (arm9dest + arm9size > (int)_start) response = 1;
-	if (arm7dest >= 0x02000000 && arm7dest < 0x03000000 && arm7dest + arm7size > (int)_start) response = 2;
+	if (arm9dest + arm9size > _start) response = 1;
+	if (arm7dest >= (char *)0x02000000 && arm7dest < (char *)0x03000000 && arm7dest + arm7size > _start) response = 2;
 
 	if (isDSiMode() && (__NDSHeader->unitCode & 0x02)) response |= (1<<16);
 
@@ -129,7 +129,7 @@ int loadNDS(int socket, u32 remote) {
 
 	if(response & (1<<16)) {
 		kprintf("Reading DSi header: ");
-		len = recvall(socket,(void*)0x2FFE000,0x1000,0);
+		len = recvall(socket,__DSiHeader,0x1000,0);
 		if (len != 0x1000) {
 			kprintf("Error.\n");
 			return 1;
@@ -157,11 +157,11 @@ int loadNDS(int socket, u32 remote) {
 	}
 
 	if(response & (1<<16)) {
-		int arm7idest = __NDSHeader->arm7idestination;
-		int arm7isize = __NDSHeader->arm7ibinarySize;
+		char *arm7idest = __DSiHeader->arm7idestination;
+		int arm7isize = __DSiHeader->arm7ibinarySize;
 
-		int arm9idest = __NDSHeader->arm9idestination;
-		int arm9isize = __NDSHeader->arm9ibinarySize;
+		char *arm9idest = __DSiHeader->arm9idestination;
+		int arm9isize = __DSiHeader->arm9ibinarySize;
 
 		kprintf("Reading arm7i binary: ");
 		if (progressRead(socket,(char *)memUncached((void*)arm7idest),arm7isize)) {
