@@ -282,7 +282,7 @@ int sendNDSFile(in_addr_t dsaddr, char *ndsfile) {
 
 			if(sendData(sock,arm7isize,arm7i)) {
 
-				fprintf(stderr,"Failed sending arm7 binary\n");
+				fprintf(stderr,"Failed sending arm7i binary\n");
 				retval = 1;
 				goto error;
 			}
@@ -294,7 +294,7 @@ int sendNDSFile(in_addr_t dsaddr, char *ndsfile) {
 
 			if(sendData(sock,arm9isize,arm9i)) {
 
-				fprintf(stderr,"Failed sending arm9 binary\n");
+				fprintf(stderr,"Failed sending arm9i binary\n");
 				retval = 1;
 				goto error;
 			}
