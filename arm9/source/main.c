@@ -163,16 +163,20 @@ int loadNDS(int socket, u32 remote) {
 		char *arm9idest = __DSiHeader->arm9idestination;
 		int arm9isize = __DSiHeader->arm9ibinarySize;
 
-		kprintf("Reading arm7i binary: ");
-		if (progressRead(socket,(char *)memUncached((void*)arm7idest),arm7isize)) {
-			kprintf("\nReceive error.\n");
-			return 1;
+		if (arm7isize) {
+			kprintf("Reading arm7i binary: ");
+			if (progressRead(socket,(char *)memUncached((void*)arm7idest),arm7isize)) {
+				kprintf("\nReceive error.\n");
+				return 1;
+			}
 		}
 
-		kprintf("Reading arm9i binary: ");
-		if (progressRead(socket,(char *)arm9idest,arm9isize)) {
-			kprintf("\nReceive error.\n");
-			return 1;
+		if (arm9isize) {
+			kprintf("Reading arm9i binary: ");
+			if (progressRead(socket,(char *)arm9idest,arm9isize)) {
+				kprintf("\nReceive error.\n");
+				return 1;
+			}
 		}
 	}
 

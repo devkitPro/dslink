@@ -277,23 +277,27 @@ int sendNDSFile(in_addr_t dsaddr, char *ndsfile) {
 		int arm7isize = header->dsi7_size;
 		int arm9isize = header->dsi9_size;
 
-		printf("Sending arm7i, %d bytes\n",arm7isize);
+		if (arm7isize) {
+			printf("Sending arm7i, %d bytes\n",arm7isize);
 
-		if(sendData(sock,arm7isize,arm7i)) {
+			if(sendData(sock,arm7isize,arm7i)) {
 
-			fprintf(stderr,"Failed sending arm7 binary\n");
-			retval = 1;
-			goto error;
+				fprintf(stderr,"Failed sending arm7 binary\n");
+				retval = 1;
+				goto error;
+			}
 
 		}
 
-		printf("Sending arm9, %d bytes\n",arm9isize);
+		if (arm9isize) {
+			printf("Sending arm9i, %d bytes\n",arm9isize);
 
-		if(sendData(sock,arm9isize,arm9i)) {
+			if(sendData(sock,arm9isize,arm9i)) {
 
-			fprintf(stderr,"Failed sending arm9 binary\n");
-			retval = 1;
-			goto error;
+				fprintf(stderr,"Failed sending arm9 binary\n");
+				retval = 1;
+				goto error;
+			}
 		}
 
 	}
