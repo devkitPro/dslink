@@ -36,7 +36,7 @@ void VblankHandler(void) {
 volatile bool exitflag = false;
 
 //---------------------------------------------------------------------------------
-void powerButtonHandler() {
+void powerButtonCB() {
 //---------------------------------------------------------------------------------
 	exitflag = true;
 }
@@ -68,12 +68,15 @@ int main() {
 
 	// read User Settings from firmware
 	readUserSettings();
+	ledBlink(0);
 
 	irqInit();
-	fifoInit();
 
 	// Start the RTC tracking IRQ
 	initClockIRQ();
+
+	fifoInit();
+	touchInit();
 
 	SetYtrigger(80);
 
@@ -86,8 +89,7 @@ int main() {
 
 	irqEnable( IRQ_VBLANK | IRQ_VCOUNT | IRQ_NETWORK);
 
-	irqSetAUX(IRQ_I2C, powerButtonHandler);
-	irqEnableAUX(IRQ_I2C);
+	setPowerButtonCB(powerButtonCB);
 
 	// Keep the ARM7 mostly idle
 	while (!exitflag) {
