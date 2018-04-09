@@ -168,7 +168,6 @@ noclear:
 	ldr	r2, [r10]
 
 	@ Switch MPU to startup default
-	mrc	p15, 0, r0, c1, c0, 0
 	ldr	r0, =0x00012078
 	mcr	p15, 0, r0, c1, c0, 0
 
