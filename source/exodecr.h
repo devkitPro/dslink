@@ -27,6 +27,11 @@
  *   specific prior written permission.
  */
 
+/**
+ * This decompressor decompresses files that have been compressed
+ * using the raw sub-sub command with the -b (not default) and -P39
+ * (default) setting of the raw command.
+ */
 char *exo_decrunch(const char *in, char *out);
 
 #endif /* EXO_DECRUNCH_ALREADY_INCLUDED */
